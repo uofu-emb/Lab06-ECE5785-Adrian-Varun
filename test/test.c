@@ -14,17 +14,13 @@
 
 #define TASK_STACK_SIZE 2048
 
-
-
-
-
 void setUp(void) {}
 
 void tearDown(void) {}
 
 void inversion_test()
 {
-
+    sleep_ms(5000);
 }
 
 void monitor_task(void* params)
@@ -39,9 +35,11 @@ int main (void)
     printf("Start tests\n");
     UNITY_BEGIN();
 
-    TaskHandle_t monitor_task;
-    xTaskCreate(monitor_task, "Monitor Thread",
-                TASK_STACK_SIZE, NULL, 0, NULL);
+    TaskHandle_t task_1;
+    xTaskCreate(monitor_task, "MonitorThread",
+                TASK_STACK_SIZE, NULL, 0, &task_1);
+
+    vTaskStartScheduler();
 
     sleep_ms(5000);
     return UNITY_END();
