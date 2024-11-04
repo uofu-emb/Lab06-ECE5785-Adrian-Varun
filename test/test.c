@@ -12,34 +12,24 @@
 
 #include "helper.h"
 
+#define TASK_STACK_SIZE 2048
 
-void high_task(void* params)
-{
-    
-}
 
-void low_task(void* params)
-{
 
-}
 
 
 void setUp(void) {}
 
 void tearDown(void) {}
 
-void test_variable_assignment()
+void inversion_test()
 {
-    int x = 1;
-    TEST_ASSERT_TRUE_MESSAGE(x == 1,"Variable assignment failed.");
+
 }
 
-void test_multiplication(void)
+void monitor_task(void* params)
 {
-    int x = 30;
-    int y = 6;
-    int z = x / y;
-    TEST_ASSERT_TRUE_MESSAGE(z == 5, "Multiplication of two integers returned incorrect value.");
+    inversion_test();
 }
 
 int main (void)
@@ -48,6 +38,10 @@ int main (void)
     sleep_ms(5000); // Give time for TTY to attach.
     printf("Start tests\n");
     UNITY_BEGIN();
+
+    TaskHandle_t monitor_task;
+    xTaskCreate(monitor_task, "Monitor Thread",
+                TASK_STACK_SIZE, NULL, 0, NULL);
 
     sleep_ms(5000);
     return UNITY_END();

@@ -28,7 +28,8 @@ void task_manager (
     xTaskCreate(sec_task, "Secondary Thread",
                 TASK_STACK_SIZE, NULL, sec_task_priority, &sec_task_handle);
 
-
+    // Get the statistics
+    *pri_task_stats = ulTaskGetRunTimeCounter();
 
     vTaskDelete(pri_task_handle);
     vTaskDelete(sec_task_handle);
