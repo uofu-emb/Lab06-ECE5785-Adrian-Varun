@@ -1,8 +1,28 @@
 #include <stdio.h>
-#include <pico/stdlib.h>
-#include <stdint.h>
+
 #include <unity.h>
 #include "unity_config.h"
+
+#include "FreeRTOS.h"
+#include "task.h"
+#include "semphr.h"
+
+#include "pico/stdlib.h"
+#include "pico/multicore.h"
+
+#include "helper.h"
+
+
+void high_task(void* params)
+{
+    
+}
+
+void low_task(void* params)
+{
+
+}
+
 
 void setUp(void) {}
 
@@ -28,8 +48,7 @@ int main (void)
     sleep_ms(5000); // Give time for TTY to attach.
     printf("Start tests\n");
     UNITY_BEGIN();
-    RUN_TEST(test_variable_assignment);
-    RUN_TEST(test_multiplication);
+
     sleep_ms(5000);
     return UNITY_END();
 }
