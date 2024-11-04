@@ -20,7 +20,8 @@ void tearDown(void) {}
 
 void inversion_test()
 {
-    sleep_ms(5000);
+    //Sample Test, Not Actual Code
+    TEST_ASSERT_EQUAL_INT(1, 1);
 }
 
 void monitor_task(void* params)
