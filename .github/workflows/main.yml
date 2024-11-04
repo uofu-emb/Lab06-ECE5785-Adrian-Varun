@@ -55,7 +55,9 @@ jobs:
       - name: Reboot
         working-directory: ${{github.workspace}}
         shell: bash
-        run: picotool reboot
+        run: |
+          - sleep 5
+          - picotool reboot
       - name: Test
         working-directory: ${{github.workspace}}
         shell: bash
