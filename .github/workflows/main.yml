@@ -56,8 +56,8 @@ jobs:
         working-directory: ${{github.workspace}}
         shell: bash
         run: |
-          - python3 -c 'import time; time.sleep(5000)'
-          - picotool reboot
+          python3 -c 'import time; time.sleep(5000)'
+          picotool reboot
       - name: Test
         working-directory: ${{github.workspace}}
         shell: bash
