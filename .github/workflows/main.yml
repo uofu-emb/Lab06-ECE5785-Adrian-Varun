@@ -52,12 +52,11 @@ jobs:
         shell: bash
         # Make sure to set the correct elf file
         run: openocd -s $OPENOCD_PATH -f interface/cmsis-dap.cfg -f target/rp2040.cfg -c 'adapter speed 5000; program "mytest.elf" verify reset exit'
-      # - name: Reboot
-      #   working-directory: ${{github.workspace}}
-      #   shell: bash
-      #   run: |
-      #     python3 -c 'import time; time.sleep(5)'
-      #     picotool reboot
+      - name: Reboot
+        shell: bash
+        run: |
+          python3 -c 'import time; time.sleep(5)'
+          picotool reboot
       - name: Test
         working-directory: ${{github.workspace}}
         shell: bash
