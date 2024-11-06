@@ -15,10 +15,6 @@
 #define TASK_STACK_SIZE 2048
 
 
-#define MAIN_TASK_PRIORITY      ( tskIDLE_PRIORITY + 1UL )
-#define MAIN_TASK_STACK_SIZE configMINIMAL_STACK_SIZE
-
-
 void setUp(void) {}
 
 void tearDown(void) {}
@@ -40,14 +36,10 @@ int main (void)
     sleep_ms(5000); // Give time for TTY to attach.
     printf("Start tests\n");
     UNITY_BEGIN();
-
-    TaskHandle_t task_1;
-    printf("before task\n");
+    TaskHandle_t task;
     xTaskCreate(monitor_task, "MonitorThread",
-                MAIN_TASK_STACK_SIZE, NULL, MAIN_TASK_PRIORITY, &task_1);
-    printf("after task\n");
+                TASK_STACK_SIZE, NULL, 0, &task);
     vTaskStartScheduler();
-
     sleep_ms(5000);
     return UNITY_END();
 }
