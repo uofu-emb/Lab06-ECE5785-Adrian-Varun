@@ -4,12 +4,15 @@ on: [push, pull_request]
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
+  PICO_SDK_PATH: /usr/local/share/pico/pico-sdk
+  FREERTOS_KERNEL_PATH: /usr/local/share/pico/FreeRTOS-Kernel
+  UNITY_PATH: /usr/local/share/pico/Unity
+  OPENOCD_PATH: /usr/share/openocd
+  PICO_TOOLCHAIN_PATH: /usr/bin
 
 jobs:
   build:
     runs-on: [self-hosted, linux, x64]
-    # container:
-    #   image: ghcr.io/uofu-emb/pico-docker:main
     steps:
       - name: Clean workspace
         run: |
@@ -42,3 +45,20 @@ jobs:
         shell: bash
         # Execute the build.  You can specify a specific target with "--target <NAME>"
         run: cmake --build ./build --config $BUILD_TYPE --parallel $(nproc)
+
+      - name: Flash
+        # This follows the convention of where we put tests, but it can be anything
+        working-directory: ${{github.workspace}}/build/test
+        shell: bash
+        # Make sure to set the correct elf file
+        run: openocd -s $OPENOCD_PATH -f interface/cmsis-dap.cfg -f target/rp2040.cfg -c 'adapter speed 5000; program "mytest.elf" verify reset exit'
+      # - name: Reboot
+      #   working-directory: ${{github.workspace}}
+      #   shell: bash
+      #   run: |
+      #     python3 -c 'import time; time.sleep(5)'
+      #     picotool reboot
+      - name: Test
+        working-directory: ${{github.workspace}}
+        shell: bash
+        run: python3 /usr/local/share/pico/unity_checker.py
