@@ -1,12 +1,7 @@
 #include <stdio.h>
-
-#include "FreeRTOS.h"
-#include "task.h"
-#include "semphr.h"
-
-#include "pico/stdlib.h"
-#include "pico/multicore.h"
-#include "pico/cyw43_arch.h"
+#include <FreeRTOS.h>
+#include <task.h>
+#include "helper.h"
 
 #define TASK_STACK_SIZE     2048
 
@@ -29,7 +24,7 @@ void task_manager (
                 TASK_STACK_SIZE, NULL, sec_task_priority, &sec_task_handle);
 
     // Get the statistics
-    *pri_task_stats = ulTaskGetRunTimeCounter();
+    *pri_task_stats = ulTaskGetRunTimeCounter(pri_task);
 
     vTaskDelete(pri_task_handle);
     vTaskDelete(sec_task_handle);
