@@ -57,9 +57,9 @@ void inv_task_c(void* params)
     }
 }
 
-void inversion_test()
+void activity_0()
 {
-    printf("Inversion test\n");
+    printf("Inversion test with  'xSemaphoreCreateBinary' \n");
     semaphore = xSemaphoreCreateBinary();
     xSemaphoreGive(semaphore);
 
@@ -87,12 +87,42 @@ void inversion_test()
     vSemaphoreDelete(semaphore);
 }
 
+void activity_1()
+{
+    printf("Inversion test with  'xSemaphoreCreateMutex' \n");
+    semaphore = xSemaphoreCreateMutex();
+    xSemaphoreGive(semaphore);
+
+    // Task A = Low Priority
+    // Task B = Med Priority
+    // Task C = High Priority    
+    const int A_prior = 3;
+    const int B_prior = 4;
+    const int C_prior = 5;
+
+    int A_stats, B_stats, C_stats, total_stats;
+
+    task_manager(3, 
+                inv_task_a, A_prior, &A_stats, 1, 
+                inv_task_c, C_prior, &C_stats, 1, 
+                inv_task_b, B_prior, &B_stats, 1, 
+                &total_stats, NULL);
+    
+    printf("A: %i, B: %i, C: %i, total: %i \n", A_stats, B_stats, C_stats, total_stats);
+
+    TEST_ASSERT(A_stats > 2000);
+    TEST_ASSERT(B_stats < 2000);
+    TEST_ASSERT(C_stats > 2000);
+
+    vSemaphoreDelete(semaphore);
+}
+
 void monitor_task(__unused void* params)
 {
     while (1)
     {
-        RUN_TEST(inversion_test);
-
+        RUN_TEST(activity_0);
+        RUN_TEST(activity_1);
         vTaskDelay(1000);
     }
 }
