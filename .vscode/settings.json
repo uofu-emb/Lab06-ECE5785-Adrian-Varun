@@ -39,6 +39,7 @@
     "raspberry-pi-pico.python3Path": "python3",
     "files.associations": {
         "multicore.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "freertos.h": "c"
     }
 }
