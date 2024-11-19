@@ -78,6 +78,8 @@ void inv_task_c(void* params)
     }
 }
 
+
+/*Task Inversion created with xSemaphoreCreateBinary*/
 void activity_0()
 {
     printf("Inversion test with  'xSemaphoreCreateBinary' \n");
@@ -108,6 +110,7 @@ void activity_0()
     vSemaphoreDelete(semaphore);
 }
 
+/*Task Inversion created with xSemaphoreCreateMutex*/
 void activity_1()
 {
     printf("Inversion test with  'xSemaphoreCreateMutex' \n");
@@ -138,7 +141,11 @@ void activity_1()
     vSemaphoreDelete(semaphore);
 }
 
-void activity_run_busy_busy(){
+/** Both tasks runs with busy_busy() function
+ * with same priority level.
+ * Dummy task is just passed but never gets executed.
+ */
+void activity_both_run_busy_busy(){
     int priority_level = tskIDLE_PRIORITY+(3);
     int A_stats, B_stats, dummy_stats, total_stats;
     task_manager(2, 
@@ -151,13 +158,138 @@ void activity_run_busy_busy(){
     TEST_ASSERT(B_stats > 2000000);
 }
 
+/** Both tasks runs with busy_yield() function
+ * with same priority level.
+ * Dummy task is just passed but never gets executed.
+ */
+void activity_both_run_busy_yield(){
+    int priority_level = tskIDLE_PRIORITY+(3);
+    int A_stats, B_stats, dummy_stats, total_stats;
+    task_manager(2, 
+                busy_yield, priority_level, &A_stats, 1, 
+                busy_yield, priority_level, &B_stats, 1, 
+                dummy_task, priority_level, &dummy_stats, 1, 
+                &total_stats, NULL);
+    printf("A: %i, B: %i, total: %i \n", A_stats, B_stats, total_stats);
+    TEST_ASSERT(A_stats > 2000000);
+    TEST_ASSERT(B_stats > 2000000);
+}
+
+/** One task runs busy_yield() function and other taks runs with busy_yield() function
+ * with same priority level.
+ * Dummy task is just passed but never gets executed.
+ */
+void activity_run_busy_yield_busy_busy(){
+    int priority_level = tskIDLE_PRIORITY+(3);
+    int A_stats, B_stats, dummy_stats, total_stats;
+    task_manager(2, 
+                busy_busy, priority_level, &A_stats, 1, 
+                busy_yield, priority_level, &B_stats, 1, 
+                dummy_task, priority_level, &dummy_stats, 1, 
+                &total_stats, NULL);
+    printf("A: %i, B: %i, total: %i \n", A_stats, B_stats, total_stats);
+    TEST_ASSERT(A_stats > B_stats);
+    TEST_ASSERT(A_stats > 4400000);
+    TEST_ASSERT(20000 > B_stats);
+}
+
+/** Both tasks runs with busy_busy() function
+ * where it first executes with lower priority.
+ * Dummy task is just passed but never gets executed.
+ */
+void activity_run_diff_prior_busy_busy_low_first(){
+    int higher_priority_level = tskIDLE_PRIORITY+(4);
+    int lower_priority_level = tskIDLE_PRIORITY+(3);
+    int dummy_priority_level = 0;
+    int A_stats, B_stats, dummy_stats, total_stats;
+
+    task_manager(2, 
+                busy_busy, lower_priority_level, &A_stats, 1, 
+                busy_busy, higher_priority_level, &B_stats, 1, 
+                dummy_task, dummy_priority_level, &dummy_stats, 1, 
+                &total_stats, NULL);
+    printf("A: %i, B: %i, total: %i \n", A_stats, B_stats, total_stats);
+
+    TEST_ASSERT(1000 > A_stats);
+    TEST_ASSERT(4500000 < B_stats);
+}
+
+/** Both tasks runs with busy_busy() function
+ * where it first executes with higher priority.
+ * Dummy task is just passed but never gets executed.
+ */
+void activity_run_diff_prior_busy_busy_high_first(){
+    int higher_priority_level = tskIDLE_PRIORITY+(4);
+    int lower_priority_level = tskIDLE_PRIORITY+(3);
+    int dummy_priority_level = 0;
+    int A_stats, B_stats, dummy_stats, total_stats;
+
+    task_manager(2, 
+                busy_busy, higher_priority_level, &A_stats, 1, 
+                busy_busy, lower_priority_level, &B_stats, 1, 
+                dummy_task, dummy_priority_level, &dummy_stats, 1, 
+                &total_stats, NULL);
+    printf("A: %i, B: %i, total: %i \n", A_stats, B_stats, total_stats);
+
+    TEST_ASSERT(4500000 < A_stats);
+    TEST_ASSERT(1000 > B_stats);
+}
+
+/** Both tasks runs with busy_yield() function
+ * where it first executes with lower priority.
+ * Dummy task is just passed but never gets executed.
+ */
+void activity_run_diff_prior_busy_yield_low_first(){
+    int higher_priority_level = tskIDLE_PRIORITY+(4);
+    int lower_priority_level = tskIDLE_PRIORITY+(3);
+    int dummy_priority_level = 0;
+    int A_stats, B_stats, dummy_stats, total_stats;
+
+    task_manager(2, 
+                busy_yield, lower_priority_level, &A_stats, 1, 
+                busy_yield, higher_priority_level, &B_stats, 1, 
+                dummy_task, dummy_priority_level, &dummy_stats, 1, 
+                &total_stats, NULL);
+    printf("A: %i, B: %i, total: %i \n", A_stats, B_stats, total_stats);
+
+    TEST_ASSERT(1000 > A_stats);
+    TEST_ASSERT(4500000 < B_stats);
+}
+
+/** Both tasks runs with busy_yield() function
+ * where it first executes with higher priority.
+ * Dummy task is just passed but never gets executed.
+ */
+void activity_run_diff_prior_busy_yield_high_first(){
+    int higher_priority_level = tskIDLE_PRIORITY+(4);
+    int lower_priority_level = tskIDLE_PRIORITY+(3);
+    int dummy_priority_level = 0;
+    int A_stats, B_stats, dummy_stats, total_stats;
+
+    task_manager(2, 
+                busy_yield, higher_priority_level, &A_stats, 1, 
+                busy_yield, lower_priority_level, &B_stats, 1, 
+                dummy_task, dummy_priority_level, &dummy_stats, 1, 
+                &total_stats, NULL);
+    printf("A: %i, B: %i, total: %i \n", A_stats, B_stats, total_stats);
+
+    TEST_ASSERT(4500000 < A_stats);
+    TEST_ASSERT(1000 > B_stats);
+}
+
 void monitor_task(__unused void* params)
 {
     while (1)
     {
         RUN_TEST(activity_0);
         RUN_TEST(activity_1);
-        RUN_TEST(activity_run_busy_busy);
+        RUN_TEST(activity_both_run_busy_busy);
+        RUN_TEST(activity_both_run_busy_yield);
+        RUN_TEST(activity_run_busy_yield_busy_busy);
+        RUN_TEST(activity_run_diff_prior_busy_busy_low_first);
+        RUN_TEST(activity_run_diff_prior_busy_busy_high_first);
+        RUN_TEST(activity_run_diff_prior_busy_yield_low_first);
+        RUN_TEST(activity_run_diff_prior_busy_yield_high_first);
         vTaskDelay(1000);
     }
 }
